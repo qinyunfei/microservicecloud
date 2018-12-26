@@ -1,0 +1,92 @@
+# druid生成的公钥 123456
+public-key: MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAIVLnruuKfX6VokAi84ARqe/emkyXQA8FBXhxJ2TCbwcS3ifyQuhDqMKeGtYi0ezRanYBecgKQawWAIBAJ1JtbUCAwEAAQ==
+server:
+  port: 8001
+spring:
+  application:
+    name: microservicecloud-dept
+#jdbc配置
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://10.211.55.29:3306/clouddb01?useUnicode=true&characterEncoding=utf-8&useSSL=false
+    username: root
+    password: Nn8eLvB0DmYmCxqsYmdeSUMKZ25ov9PalbnmXUInuvbcJpBj4XdI2bDKnkzV+raNxCnhQmHsKju5xvnF0TNs3Q==
+#   druid数据源配置
+    druid:
+#     启用ConfigFilter
+      filter.config.enabled: true
+#     配置 connection-properties，启用加密，配置公钥。
+      connection-properties: config.decrypt=true;config.decrypt.key=${public-key}
+#     配置初始化大小、最小、最大
+      initial-size: 5
+      max-active: 20
+      max-idle: 1
+#     配置获取连接等待超时的时间 位是毫秒
+      max-wait: 60000
+#     是否缓存preparedStatement，也就是PSCache。 PSCache对支持游标的数据库性能提升巨大，比如说oracle。mysql建议关闭
+      pool-prepared-statements: false
+#     要启用PSCache，必须配置大于0，当大于0时，poolPreparedStatements自动触发修改为true。
+      max-pool-prepared-statement-per-connection-size: -1
+#     用来检测连接是否有效的sql，要求是一个查询语句。如果validationQuery为null，testOnBorrow、testOnReturn、testWhileIdle都不会其作用
+      validation-query: SELECT 'x'
+#     检测超时时间
+#     validation-query-timeout: 60000
+#     申请连接时执行validationQuery检测连接是否有效，做了这个配置会降低性能。
+      test-on-borrow: true
+#     归还连接时执行validationQuery检测连接是否有效，做了这个配置会降低性能
+      test-on-return: false
+#     建议配置为true，不影响性能，并且保证安全性。 申请连接的时候检测，如果空闲时间大于 timeBetweenEvictionRunsMillis，执行validationQuery检测连接是否有效
+      test-while-idle: true
+#     配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒
+      time-between-eviction-runs-millis: 60000
+#     配置一个连接在池中最小生存的时间，单位是毫秒
+      min-evictable-idle-time-millis: 300000
+#     链接使用超过时间限制是否回收
+      remove-abandoned: true
+#     超过时间限制时间（单位秒）
+      remove-abandoned-timeout: 300
+#      链接回收的时候控制台打印信息，测试环境可以加上true，线上环境false。会影响性能。
+      log-abandoned: false
+
+#     监控配置
+#     WebStatFilter
+#     是否启用StatFilter默认值true
+      web-stat-filter:
+        enabled: true
+        exclusions: '*.js,*.gif,*.jpg,*.bmp,*.png,*.css,*.ico,/druid/*'
+        url-pattern: '/*'
+
+#     StatViewServlet配置
+#     是否启用StatViewServlet默认值true
+      stat-view-servlet:
+        enabled: true
+        url-pattern: '/druid/*'
+
+
+mapper:
+#通用mapper配置
+  mappers:
+    - com.qin.wcc.framework.mapper.BaseMapper
+
+mybatis:
+# 指定sql映射文件的位置
+  mapper-locations: 'classpath:mybatis/mappers/**/*.xml'
+
+eureka:
+  client:
+    service-url:
+     #注册中心
+     defaultZone: http://eureka7001.com:7001/eureka/,http://eureka7002.com:7002/eureka/,http://eureka7003.com:7003/eureka/
+  instance:
+    #服务名称
+    instance-id: microservicecloud-dept-8001
+    #显示ip地址
+    prefer-ip-address: true
+
+info:
+  app:
+    name: "@project.artifactId@"
+    encoding: '@project.build.sourceEncoding@'
+    java:
+      source: '@java.version@'
+      target: '@java.version@'
